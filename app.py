@@ -89,3 +89,67 @@ ax5.set_title('Doanh Thu: Ngày Lễ vs Ngày Thường')
 ax5.set_xlabel('Holiday (True/False)')
 ax5.set_ylabel('Doanh Thu')
 st.pyplot(fig5)
+
+import matplotlib.pyplot as plt
+
+# [Your existing code]
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+import pandas as pd
+
+# Ensure your DataFrame 'df' is loaded and preprocessed before this point
+
+# Convert 'Date' to datetime
+df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+
+# Extract features from date
+df['Year'] = df['Date'].dt.year
+df['Month'] = df['Date'].dt.month
+df['Day'] = df['Date'].dt.day
+
+# Encode 'Holiday_Flag'
+df['Holiday_Flag'] = df['Holiday_Flag'].astype(int)
+
+# Drop missing values
+df = df.dropna(subset=['Weekly_Sales', 'Date'])
+
+# Prepare features and target
+X = df[['Year', 'Month', 'Day', 'Holiday_Flag']]
+y = df['Weekly_Sales']
+
+# Split into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Predict on test data
+y_pred = model.predict(X_test)
+
+# Evaluate model
+print("Mean Squared Error:", mean_squared_error(y_test, y_pred))
+print("R-squared:", r2_score(y_test, y_pred))
+
+# Plot Actual vs Predicted sales
+plt.figure(figsize=(10, 5))
+plt.scatter(y_test, y_pred, alpha=0.5)
+plt.xlabel("Actual Sales")
+plt.ylabel("Predicted Sales")
+plt.title("Actual vs Predicted Sales")
+plt.grid(True)
+plt.show()
+
+st.subheader("6. Mô hình phân tích số lượng bán thực và dự đoán")
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.scatter(y_test, y_pred, alpha=0.5)
+ax.set_xlabel("Actual Sales")
+ax.set_ylabel("Predicted Sales")
+ax.set_title("Actual vs Predicted Sales")
+ax.grid(True)
+
+st.pyplot(fig)
