@@ -19,17 +19,31 @@ st.title("📊 Phân Tích Doanh Thu Walmart")
 st.markdown("Dữ liệu doanh thu hàng tuần từ các cửa hàng Walmart. Các biểu đồ dưới đây trình bày phân tích theo thời gian, địa điểm, và theo ngày lễ.")
 
 # 1. Biểu đồ Tổng doanh thu mỗi 3 tháng
-st.subheader("1. Tổng Doanh Thu mỗi 3 Tháng")
-df['Quarter3M'] = df['Date'].dt.year.astype(str) + '-Q' + ((df['Date'].dt.month - 1) // 3 + 1).astype(str)
+# Drop rows with invalid or missing 'Date'
+df.dropna(subset=['Date'], inplace=True)
+
+# Create quarter labels in 'YYYY-Qx' format
+df['Quarter3M'] = df['Date'].dt.year.astype(str) + '-Q' + (((df['Date'].dt.month - 1) // 3) + 1).astype(str)
+
+# Group by quarter and sum total sales
 quarterly_sales = df.groupby('Quarter3M')['Weekly_Sales'].sum().reset_index()
 
-fig1, ax1 = plt.subplots(figsize=(12, 6))
-ax1.bar(quarterly_sales['Quarter3M'], quarterly_sales['Weekly_Sales'], color='lightgreen')
-ax1.set_title('Tổng Doanh Thu mỗi 3 Tháng')
-ax1.set_xlabel('Quarter')
-ax1.set_ylabel('Tổng Doanh Thu')
-plt.xticks(rotation=45)
-st.pyplot(fig1)
+# Plotting
+fig, ax = plt.subplots(figsize=(14, 7))
+ax.bar(quarterly_sales['Quarter3M'], quarterly_sales['Weekly_Sales'], color='lightblue')
+
+ax.set_title('Tổng Doanh Thu Mỗi Quý (3 Tháng)', fontsize=16)
+ax.set_xlabel('Quý (Năm - Qx)', fontsize=14)
+ax.set_ylabel('Tổng Doanh Thu', fontsize=14)
+ax.grid(True, linestyle='--', alpha=0.6)
+
+# Improve readability of x-axis labels
+plt.xticks(rotation=45, fontsize=12)
+plt.yticks(fontsize=12)
+
+# Display the plot in Streamlit
+st.subheader("1. Tổng Doanh Thu Mỗi Quý (3 Tháng)")
+st.pyplot(fig)
 
 # 2. Biểu đồ Doanh thu theo Ngày
 st.subheader("2. Tổng Doanh Thu theo Ngày")
