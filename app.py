@@ -10,8 +10,8 @@ sns.set_style('whitegrid')
 @st.cache_data
 def load_data():
     df = pd.read_csv("Walmart_Sales.csv")
-df['Date'] = pd.to_datetime(df['Date'], errors='coerce')    
-return df
+    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')    
+    return df
 
 df = load_data()
 
